@@ -342,7 +342,7 @@ public class EditorHelper {
     if (offset > textLength) {
       offset = textLength;
     }
-    if (offset > 0 && !allowEnd && editor.getDocument().getCharsSequence().charAt(textLength - 1) == '\n'){
+    if (offset > 0 && !allowEnd && editor.getDocument().getCharsSequence().charAt(offset) == '\n'){
       offset --;
     }
     return offset;
