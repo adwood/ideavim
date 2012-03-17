@@ -72,7 +72,7 @@
   </target>
 
   <!-- Create ideavim.jar for packing inside zip plugin package -->
-  <target name="jar">
+  <target name="jar" depends="compile">
     <mkdir dir="${classes}"/>
     <mkdir dir="${classes}/META-INF"/>
     <copy file="resources/META-INF/plugin.xml" todir="${classes}/META-INF">
