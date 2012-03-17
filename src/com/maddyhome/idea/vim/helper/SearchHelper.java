@@ -110,7 +110,7 @@ public class SearchHelper {
       return null;
     }
 
-    int bend = findBlockLocation(chars, type, close, 1, bstart + 1, 1);
+    int bend = findBlockLocation(chars, type, close, 1, bstart, 1);
 
     if (!isOuter) {
       bstart++;
