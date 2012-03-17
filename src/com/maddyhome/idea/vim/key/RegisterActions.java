@@ -560,10 +560,14 @@ public class RegisterActions {
     parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionScrollFirstScreenLinePageStart", Command.OTHER_READONLY, new Shortcut[]{
       new Shortcut("z+")
     });
-    parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionScrollHalfPageDown", Command.OTHER_READONLY, Command.FLAG_IGNORE_SCROLL_JUMP,
-                          new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_MASK)));
-    parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionScrollHalfPageUp", Command.OTHER_READONLY, Command.FLAG_IGNORE_SCROLL_JUMP,
-                          new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_U, KeyEvent.CTRL_MASK)));
+    parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionScrollHalfPageDown", Command.MOTION, Command.FLAG_MOT_LINEWISE, new Shortcut[]{
+      new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_MASK)),
+      new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.SHIFT_MASK))
+      });
+    parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionScrollHalfPageUp", Command.MOTION, Command.FLAG_MOT_LINEWISE, new Shortcut[]{
+      new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_U, KeyEvent.CTRL_MASK)),
+      new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.SHIFT_MASK))
+      });
     parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionScrollLastScreenLine", Command.OTHER_READONLY, new Shortcut[]{
       new Shortcut("zb")
     });
