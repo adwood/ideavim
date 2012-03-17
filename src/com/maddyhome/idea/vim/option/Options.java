@@ -437,7 +437,7 @@ public class Options {
         BufferedReader br = new BufferedReader(new FileReader(rc));
         String line;
         while ((line = br.readLine()) != null) {
-          if (line.startsWith(":set") || line.startsWith("set")) {
+          if ((line.startsWith(":set") || line.startsWith("set")) && !line.contains("selection")) {
             int pos = line.indexOf(' ');
             parseOptionLine(null, line.substring(pos).trim(), false);
           }
