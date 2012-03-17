@@ -1,0 +1,6 @@
+# Ignore build files
+/build
+/idea
+/.idea
+/classes
+/error
