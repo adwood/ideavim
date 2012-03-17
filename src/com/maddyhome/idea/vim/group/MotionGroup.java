@@ -326,6 +326,10 @@ public class MotionGroup extends AbstractActionGroup {
     return SearchHelper.findWordUnderCursor(editor, count, dir, isOuter, isBig, selection);
   }
 
+  public TextRange getQuoteRange(Editor editor, DataContext context, boolean isSingle, boolean isOuter) {
+    return SearchHelper.findQuoteRange(editor, isSingle, isOuter);
+  }
+
   public TextRange getBlockRange(Editor editor, DataContext context, int count, boolean isOuter, char type) {
     return SearchHelper.findBlockRange(editor, type, count, isOuter);
   }

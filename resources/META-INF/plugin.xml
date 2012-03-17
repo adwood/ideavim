@@ -131,6 +131,10 @@
         <action id="VimMotionOuterParagraph" class="com.maddyhome.idea.vim.action.motion.object.MotionOuterParagraphAction" text="Select Outer Paragraph"/>
         <action id="VimMotionInnerSentence" class="com.maddyhome.idea.vim.action.motion.object.MotionInnerSentenceAction" text="Select Inner Sentence"/>
         <action id="VimMotionOuterSentence" class="com.maddyhome.idea.vim.action.motion.object.MotionOuterSentenceAction" text="Select Outer Sentence"/>
+        <action id="VimMotionInnerSingleQuote" class="com.maddyhome.idea.vim.action.motion.object.MotionInnerSingleQuoteAction" text="Select Inner Single Quote"/>
+        <action id="VimMotionOuterSingleQuote" class="com.maddyhome.idea.vim.action.motion.object.MotionOuterSingleQuoteAction" text="Select Outer Single Quote"/>
+        <action id="VimMotionInnerDoubleQuote" class="com.maddyhome.idea.vim.action.motion.object.MotionInnerDoubleQuoteAction" text="Select Inner Double Quote"/>
+        <action id="VimMotionOuterDoubleQuote" class="com.maddyhome.idea.vim.action.motion.object.MotionOuterDoubleQuoteAction" text="Select Outer Double Quote"/>
         <!-- Marks -->
         <action id="VimMotionMark" class="com.maddyhome.idea.vim.action.motion.mark.MotionMarkAction" text="Mark"/>
         <action id="VimMotionGotoFileMark" class="com.maddyhome.idea.vim.action.motion.mark.MotionGotoFileMarkAction" text="Goto Mark"/>

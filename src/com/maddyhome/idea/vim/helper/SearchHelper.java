@@ -93,6 +93,48 @@ public class SearchHelper {
     return findBlockLocation(chars, found, match, dir, pos, count);
   }
 
+  public static TextRange findQuoteRange(Editor editor, boolean isSingle, boolean isOuter) {
+    CharSequence chars = editor.getDocument().getCharsSequence();
+    int pos = editor.getCaretModel().getOffset();
+    int start = editor.getSelectionModel().getSelectionStart();
+    int end = editor.getSelectionModel().getSelectionEnd();
+    if (start != end) {
+        pos = Math.min(start, end);
+    }
+    
+    char match = isSingle ? '\'' : '"';
+    int qstart = findQuoteLocation(chars, match, -1, pos);
+    if (qstart == -1) {
+      return null;
+    }
+
+    int qend = findQuoteLocation(chars, match, 1, pos + 1);
+
+    if (!isOuter) {
+      qstart++;
+      qend--;
+    }
+
+    return new TextRange(qstart, qend);
+  }
+
+  private static int findQuoteLocation(CharSequence chars, char match, int dir, int pos) {
+    // Search to start or end of file, as appropriate
+    while (pos >= 0 && pos < chars.length()) {
+      // We found our match
+      if (chars.charAt(pos) == match && (pos == 0 || chars.charAt(pos - 1) != '\\'))
+        return pos;
+
+      // End of line
+      if (chars.charAt(pos) == '\n')
+          return -1;
+
+      pos += dir;
+    }
+
+    return -1;
+  }
+
   public static TextRange findBlockRange(Editor editor, char type, int count, boolean isOuter) {
     CharSequence chars = editor.getDocument().getCharsSequence();
     int pos = editor.getCaretModel().getOffset();
