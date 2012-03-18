@@ -358,7 +358,7 @@ public class RegisterActions {
     parser.registerAction(KeyParser.MAPPING_NORMAL, "VimBreakLine", Command.OTHER_READONLY,
             new Shortcut('K'));
     parser.registerAction(KeyParser.MAPPING_NORMAL, "QuickJavaDoc", Command.OTHER_READONLY,
-            new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_SLASH, KeyEvent.META_MASK | KeyEvent.SHIFT_MASK)));
+            new Shortcut("\\?"));
     parser.registerAction(KeyParser.MAPPING_NORMAL, "VimRedo", Command.OTHER_WRITABLE,
             new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_MASK)));
     parser.registerAction(KeyParser.MAPPING_NORMAL, "VimUndo", Command.OTHER_WRITABLE, new Shortcut[]{
@@ -943,8 +943,7 @@ public class RegisterActions {
 
     // All the Ctrl keys
     parser.setupActionHandler("EditorDeleteToWordEnd", "VimDummyHandler", KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.CTRL_MASK));
-    parser
-            .setupActionHandler("EditorDeleteToWordStart", "VimDummyHandler", KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, KeyEvent.CTRL_MASK));
+    parser.setupActionHandler("EditorDeleteToWordStart", "VimDummyHandler", KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, KeyEvent.CTRL_MASK));
     parser.setupActionHandler("EditorScrollDown", "VimDummyHandler", KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.CTRL_MASK));
     parser.setupActionHandler("EditorPreviousWord", "VimDummyHandler", KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_MASK));
     parser.setupActionHandler("EditorNextWord", "VimDummyHandler", KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_MASK));
@@ -952,8 +951,7 @@ public class RegisterActions {
     parser.setupActionHandler("EditorTextStart", "VimDummyHandler", KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_MASK));
     parser.setupActionHandler("EditorTextEnd", "VimDummyHandler", KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.CTRL_MASK));
     parser.setupActionHandler("EditorMoveToPageTop", "VimDummyHandler", KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, KeyEvent.CTRL_MASK));
-    parser
-            .setupActionHandler("EditorMoveToPageBottom", "VimDummyHandler", KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, KeyEvent.CTRL_MASK));
+    parser.setupActionHandler("EditorMoveToPageBottom", "VimDummyHandler", KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, KeyEvent.CTRL_MASK));
 
     // All the Shift keys
     parser.setupActionHandler("EditorDownWithSelection", "VimDummyHandler", KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.SHIFT_MASK));
