@@ -383,11 +383,11 @@ public class RegisterActions {
             new Shortcut("=="));
     parser.registerAction(KeyParser.MAPPING_NORMAL, "VimShiftLeftLines", Command.CHANGE,
             new Shortcut("<<"));
-    parser.registerAction(KeyParser.MAPPING_NORMAL, "VimShiftLeftMotion", Command.CHANGE,
+    parser.registerAction(KeyParser.MAPPING_NORMAL, "VimShiftLeftMotion", Command.CHANGE, Command.FLAG_OP_PEND | Command.FLAG_MULTIKEY_UNDO,
             new Shortcut('<'), Argument.MOTION);
     parser.registerAction(KeyParser.MAPPING_NORMAL, "VimShiftRightLines", Command.CHANGE,
             new Shortcut(">>"));
-    parser.registerAction(KeyParser.MAPPING_NORMAL, "VimShiftRightMotion", Command.CHANGE,
+    parser.registerAction(KeyParser.MAPPING_NORMAL, "VimShiftRightMotion", Command.CHANGE, Command.FLAG_OP_PEND | Command.FLAG_MULTIKEY_UNDO,
             new Shortcut('>'), Argument.MOTION);
 
     // Jump Actions
