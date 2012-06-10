@@ -40,8 +40,7 @@ public class SearchHelper {
     if (dir > 0) {
       start = offset + 1;
       end = EditorHelper.getLineEndForOffset(editor, offset);
-    }
-    else {
+    } else {
       start = EditorHelper.getLineStartForOffset(editor, offset);
       end = offset - 1;
     }
@@ -93,6 +92,52 @@ public class SearchHelper {
     return findBlockLocation(chars, found, match, dir, pos, count);
   }
 
+  public static TextRange findQuoteRange(Editor editor, boolean isSingle, boolean isOuter) {
+    CharSequence chars = editor.getDocument().getCharsSequence();
+    int pos = editor.getCaretModel().getOffset();
+    int start = editor.getSelectionModel().getSelectionStart();
+    int end = editor.getSelectionModel().getSelectionEnd();
+    if (start != end) {
+      pos = Math.min(start, end);
+    }
+
+    char match = isSingle ? '\'' : '"';
+    int qstart = findQuoteLocation(chars, match, -1, pos);
+    if (qstart == -1) {
+      qstart = findQuoteLocation(chars, match, 1, pos);
+      if (qstart == -1 || qstart == chars.length() - 1)
+        return null;
+
+      pos = qstart;
+    }
+
+    int qend = findQuoteLocation(chars, match, 1, pos + 1);
+
+    if (!isOuter) {
+      qstart++;
+      qend--;
+    }
+
+    return new TextRange(qstart, qend);
+  }
+
+  private static int findQuoteLocation(CharSequence chars, char match, int dir, int pos) {
+    // Search to start or end of file, as appropriate
+    while (pos >= 0 && pos < chars.length()) {
+      // We found our match
+      if (chars.charAt(pos) == match && (pos == 0 || chars.charAt(pos - 1) != '\\'))
+        return pos;
+
+      // End of line
+      if (chars.charAt(pos) == '\n')
+        return -1;
+
+      pos += dir;
+    }
+
+    return -1;
+  }
+
   public static TextRange findBlockRange(Editor editor, char type, int count, boolean isOuter) {
     CharSequence chars = editor.getDocument().getCharsSequence();
     int pos = editor.getCaretModel().getOffset();
@@ -110,7 +155,7 @@ public class SearchHelper {
       return null;
     }
 
-    int bend = findBlockLocation(chars, type, close, 1, bstart + 1, 1);
+    int bend = findBlockLocation(chars, type, close, 1, bstart, 1);
 
     if (!isOuter) {
       bstart++;
@@ -129,8 +174,7 @@ public class SearchHelper {
 
       if (allWhite) {
         bend = o - 2;
-      }
-      else {
+      } else {
         bend--;
       }
     }
@@ -204,8 +248,7 @@ public class SearchHelper {
       // We found the start/end of a string
       else if (!inChar && chars.charAt(pos) == '"' && (pos == 0 || chars.charAt(pos - 1) != '\\')) {
         inString = !inString;
-      }
-      else if (!inString && chars.charAt(pos) == '\'' && (pos == 0 || chars.charAt(pos - 1) != '\\')) {
+      } else if (!inString && chars.charAt(pos) == '\'' && (pos == 0 || chars.charAt(pos - 1) != '\\')) {
         inChar = !inChar;
       }
       // End of line - mark not in a string any more (in case we started in the middle of one
@@ -231,8 +274,7 @@ public class SearchHelper {
     for (int i = offset; i < pos; i++) {
       if (!inChar && chars.charAt(i) == '"' && (i == 0 || chars.charAt(i - 1) != '\\')) {
         inString = !inString;
-      }
-      else if (!inString && chars.charAt(i) == '\'' && (i == 0 || chars.charAt(i - 1) != '\\')) {
+      } else if (!inString && chars.charAt(i) == '\'' && (i == 0 || chars.charAt(i - 1) != '\\')) {
         inChar = !inChar;
       }
     }
@@ -256,18 +298,16 @@ public class SearchHelper {
     while (pos >= 0 && pos < size && found < Math.abs(count)) {
       if (Character.isUpperCase(chars.charAt(pos))) {
         if ((pos == 0 || !Character.isUpperCase(chars.charAt(pos - 1))) ||
-            (pos == size - 1 || Character.isLowerCase(chars.charAt(pos + 1)))) {
+                (pos == size - 1 || Character.isLowerCase(chars.charAt(pos + 1)))) {
           res = pos;
           found++;
         }
-      }
-      else if (Character.isLowerCase(chars.charAt(pos))) {
+      } else if (Character.isLowerCase(chars.charAt(pos))) {
         if (pos == 0 || !Character.isLetter(chars.charAt(pos - 1))) {
           res = pos;
           found++;
         }
-      }
-      else if (Character.isDigit(chars.charAt(pos))) {
+      } else if (Character.isDigit(chars.charAt(pos))) {
         if (pos == 0 || !Character.isDigit(chars.charAt(pos - 1))) {
           res = pos;
           found++;
@@ -300,18 +340,16 @@ public class SearchHelper {
     while (pos >= 0 && pos < size && found < Math.abs(count)) {
       if (Character.isUpperCase(chars.charAt(pos))) {
         if (pos == size - 1 || !Character.isLetter(chars.charAt(pos + 1)) ||
-            (Character.isUpperCase(chars.charAt(pos + 1)) && pos <= size - 2 && Character.isLowerCase(chars.charAt(pos + 2)))) {
+                (Character.isUpperCase(chars.charAt(pos + 1)) && pos <= size - 2 && Character.isLowerCase(chars.charAt(pos + 2)))) {
           res = pos;
           found++;
         }
-      }
-      else if (Character.isLowerCase(chars.charAt(pos))) {
+      } else if (Character.isLowerCase(chars.charAt(pos))) {
         if (pos == size - 1 || !Character.isLowerCase(chars.charAt(pos + 1))) {
           res = pos;
           found++;
         }
-      }
-      else if (Character.isDigit(chars.charAt(pos))) {
+      } else if (Character.isDigit(chars.charAt(pos))) {
         if (pos == size - 1 || !Character.isDigit(chars.charAt(pos + 1))) {
           res = pos;
           found++;
@@ -362,12 +400,10 @@ public class SearchHelper {
 
       if (res == offset) {
         position = count;
-      }
-      else if (last < offset && res >= offset) {
+      } else if (last < offset && res >= offset) {
         if (count == 2 && res > offset) {
           position = 1;
-        }
-        else {
+        } else {
           position = count - 1;
         }
       }
@@ -442,11 +478,9 @@ public class SearchHelper {
         if (newType == CharacterHelper.TYPE_SPACE && step >= 0 && !spaceWords) {
           pos = skipSpace(chars, pos, step, size);
           res = pos;
-        }
-        else if (step < 0) {
+        } else if (step < 0) {
           res = pos + 1;
-        }
-        else {
+        } else {
           res = pos;
         }
 
@@ -461,13 +495,11 @@ public class SearchHelper {
       if (res < 0) //(pos <= 0)
       {
         res = 0;
-      }
-      else if (res >= size) //(pos >= size)
+      } else if (res >= size) //(pos >= size)
       {
         res = size - 1;
       }
-    }
-    else if (pos <= 0) {
+    } else if (pos <= 0) {
       res = 0;
     }
 
@@ -505,8 +537,7 @@ public class SearchHelper {
         // Ox and OX handling
         if (text.charAt(pos) == '0' && pos < text.length() - 1 && "xX".indexOf(text.charAt(pos + 1)) >= 0) {
           pos += 2;
-        }
-        else if ("xX".indexOf(text.charAt(pos)) >= 0 && pos > 0 && text.charAt(pos - 1) == '0') {
+        } else if ("xX".indexOf(text.charAt(pos)) >= 0 && pos > 0 && text.charAt(pos - 1) == '0') {
           pos++;
         }
 
@@ -523,12 +554,10 @@ public class SearchHelper {
 
         if (!isHexChar || alpha) {
           break;
-        }
-        else {
+        } else {
           pos++;
         }
-      }
-      else {
+      } else {
         break;
       }
     }
@@ -577,7 +606,7 @@ public class SearchHelper {
       start--;
     }
     if (start < end &&
-        (start == -1 || 0 <= start && start < text.length() && !isNumberChar(text.charAt(start), alpha, hex, octal, decimal))) {
+            (start == -1 || 0 <= start && start < text.length() && !isNumberChar(text.charAt(start), alpha, hex, octal, decimal))) {
       start++;
     }
     return Pair.create(start, end);
@@ -586,14 +615,11 @@ public class SearchHelper {
   private static boolean isNumberChar(char ch, boolean alpha, boolean hex, boolean octal, boolean decimal) {
     if (alpha && ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'))) {
       return true;
-    }
-    else if (octal && (ch >= '0' && ch <= '7')) {
+    } else if (octal && (ch >= '0' && ch <= '7')) {
       return true;
-    }
-    else if (hex && ((ch >= '0' && ch <= '9') || "abcdefABCDEF".indexOf(ch) >= 0)) {
+    } else if (hex && ((ch >= '0' && ch <= '9') || "abcdefABCDEF".indexOf(ch) >= 0)) {
       return true;
-    }
-    else if (decimal && (ch >= '0' && ch <= '9')) {
+    } else if (decimal && (ch >= '0' && ch <= '9')) {
       return true;
     }
 
@@ -621,8 +647,7 @@ public class SearchHelper {
         while (start > 0 && CharacterHelper.charType(chars.charAt(start - 1), false) == types[i]) {
           start--;
         }
-      }
-      else {
+      } else {
         // Search forward for start of word
         while (start < stop && CharacterHelper.charType(chars.charAt(start), false) != types[i]) {
           start++;
@@ -642,8 +667,7 @@ public class SearchHelper {
     // Special case 1 character words because 'findNextWordEnd' returns one to many chars
     if (start < stop && CharacterHelper.charType(chars.charAt(start + 1), false) != CharacterHelper.TYPE_CHAR) {
       end = start + 1;
-    }
-    else {
+    } else {
       end = findNextWordEnd(chars, start, stop, 1, false, false, false) + 1;
     }
 
@@ -674,7 +698,7 @@ public class SearchHelper {
     boolean startSpace = CharacterHelper.charType(chars.charAt(pos), isBig) == CharacterHelper.TYPE_SPACE;
     // Find word start
     boolean onWordStart = pos == min ||
-                          CharacterHelper.charType(chars.charAt(pos - 1), isBig) != CharacterHelper.charType(chars.charAt(pos), isBig);
+            CharacterHelper.charType(chars.charAt(pos - 1), isBig) != CharacterHelper.charType(chars.charAt(pos), isBig);
     int start = pos;
 
     if (logger.isDebugEnabled()) {
@@ -685,8 +709,7 @@ public class SearchHelper {
     if ((!onWordStart && !(startSpace && isOuter)) || hasSelection || (count > 1 && dir == -1)) {
       if (dir == 1) {
         start = findNextWord(chars, pos, max, -1, isBig, !isOuter);
-      }
-      else {
+      } else {
         start = findNextWord(chars, pos, max, -(count - (onWordStart && !hasSelection ? 1 : 0)), isBig, !isOuter);
       }
 
@@ -697,7 +720,7 @@ public class SearchHelper {
 
     // Find word end
     boolean onWordEnd = pos == max ||
-                        CharacterHelper.charType(chars.charAt(pos + 1), isBig) != CharacterHelper.charType(chars.charAt(pos), isBig);
+            CharacterHelper.charType(chars.charAt(pos + 1), isBig) != CharacterHelper.charType(chars.charAt(pos), isBig);
 
     if (logger.isDebugEnabled()) logger.debug("onWordEnd=" + onWordEnd);
 
@@ -705,12 +728,11 @@ public class SearchHelper {
     if (!onWordEnd || hasSelection || (count > 1 && dir == 1) || (startSpace && isOuter)) {
       if (dir == 1) {
         end = findNextWordEnd(chars, pos, max, count -
-                                               (onWordEnd && !hasSelection && (!(startSpace && isOuter) || (startSpace && !isOuter))
-                                                ? 1
-                                                : 0),
-                              isBig, true, !isOuter);
-      }
-      else {
+                (onWordEnd && !hasSelection && (!(startSpace && isOuter) || (startSpace && !isOuter))
+                        ? 1
+                        : 0),
+                isBig, true, !isOuter);
+      } else {
         end = findNextWordEnd(chars, pos, max, 1, isBig, true, !isOuter);
       }
     }
@@ -850,12 +872,10 @@ public class SearchHelper {
       if (newType != type) {
         if (step >= 0) {
           res = pos - 1;
-        }
-        else if (newType == CharacterHelper.TYPE_SPACE && step < 0 && !spaceWords) {
+        } else if (newType == CharacterHelper.TYPE_SPACE && step < 0 && !spaceWords) {
           pos = skipSpace(chars, pos, step, size);
           res = pos;
-        }
-        else {
+        } else {
           res = pos;
         }
 
@@ -869,13 +889,11 @@ public class SearchHelper {
       if (res < 0) //(pos <= 0)
       {
         res = 0;
-      }
-      else if (res >= size) //(pos >= size)
+      } else if (res >= size) //(pos >= size)
       {
         res = size - 1;
       }
-    }
-    else if (pos == size) {
+    } else if (pos == size) {
       res = size - 1;
     }
 
@@ -931,8 +949,7 @@ public class SearchHelper {
 
     if (found == Math.abs(count)) {
       return pos;
-    }
-    else {
+    } else {
       return -1;
     }
   }
@@ -956,11 +973,9 @@ public class SearchHelper {
 
     if (res < 0 && (!requireAll || total == 1)) {
       res = dir > 0 ? max - 1 : 0;
-    }
-    else if (count > 0 && total > 1 && !requireAll) {
+    } else if (count > 0 && total > 1 && !requireAll) {
       res = dir > 0 ? max - 1 : 0;
-    }
-    else if (count > 0 && total > 1 && requireAll) {
+    } else if (count > 0 && total > 1 && requireAll) {
       res = -count;
     }
 
@@ -986,11 +1001,9 @@ public class SearchHelper {
 
     if (res < 0 && (!requireAll || total == 1)) {
       res = dir > 0 ? max - 1 : 0;
-    }
-    else if (count > 0 && total > 1 && !requireAll) {
+    } else if (count > 0 && total > 1 && !requireAll) {
       res = dir > 0 ? max - 1 : 0;
-    }
-    else if (count > 0 && total > 1 && requireAll) {
+    } else if (count > 0 && total > 1 && requireAll) {
       res = -count;
     }
 
@@ -1006,8 +1019,7 @@ public class SearchHelper {
     int end;
     if (chars.charAt(start) == '\n' && !countCurrent) {
       end = findSentenceEnd(editor, chars, start, max, -1, false, multiple);
-    }
-    else {
+    } else {
       end = findSentenceEnd(editor, chars, start, max, -1, true, multiple);
     }
     if (end == start && countCurrent && chars.charAt(end) == '\n') {
@@ -1028,16 +1040,13 @@ public class SearchHelper {
       if (dir > 0) {
         if (offset == start && countCurrent) {
           return offset;
-        }
-        else if (offset > start) {
+        } else if (offset > start) {
           return offset;
         }
-      }
-      else {
+      } else {
         if (offset == start && countCurrent) {
           return offset;
-        }
-        else if (offset < start) {
+        } else if (offset < start) {
           return offset;
         }
       }
@@ -1045,8 +1054,7 @@ public class SearchHelper {
 
     if (dir > 0) {
       end = findSentenceEnd(editor, chars, start, max, dir, true, multiple);
-    }
-    else {
+    } else {
       end = findSentenceEnd(editor, chars, pos, max, dir, countCurrent, multiple);
     }
 
@@ -1068,14 +1076,12 @@ public class SearchHelper {
         if (np < res || res < start) {
           res = np;
         }
-      }
-      else {
+      } else {
         if (np > res || (res >= start && !countCurrent)) {
           res = np;
         }
       }
-    }
-    else if (res == -1 && np >= 0) {
+    } else if (res == -1 && np >= 0) {
       res = np;
     }
     // else we found neither, res already -1
@@ -1087,8 +1093,7 @@ public class SearchHelper {
                                      boolean countCurrent, boolean multiple) {
     if (dir > 0 && start >= EditorHelper.getFileSize(editor) - 1) {
       return -1;
-    }
-    else if (dir < 0 && start <= 0) {
+    } else if (dir < 0 && start <= 0) {
       return -1;
     }
 
@@ -1129,19 +1134,16 @@ public class SearchHelper {
             // Skip back to the sentence end so we can search backward from there
             // for the real previous sentence.
             offset = end;
-          }
-          else {
+          } else {
             // Yeah - we found the real end-of-sentence. Save it off.
             res = offset - 1;
             found = true;
           }
-        }
-        else {
+        } else {
           // Turned out not to be an end-of-sentence so move back to where we were.
           offset = end;
         }
-      }
-      else if (ch == '\n') {
+      } else if (ch == '\n') {
         int end = offset; // Save where we found the punctuation.
         if (dir > 0) {
           offset++;
@@ -1160,21 +1162,18 @@ public class SearchHelper {
           if (offset == np && (end - 1 != start || countCurrent)) {
             res = end - 1;
             found = true;
-          }
-          else if (offset > end) {
+          } else if (offset > end) {
             res = offset;
             np = res;
             found = true;
-          }
-          else if (offset == end) {
+          } else if (offset == end) {
             if (offset > 0 && chars.charAt(offset - 1) == '\n' && countCurrent) {
               res = end;
               np = res;
               found = true;
             }
           }
-        }
-        else {
+        } else {
           offset--;
           while (offset >= 0) {
             ch = chars.charAt(offset);
@@ -1189,8 +1188,7 @@ public class SearchHelper {
           if (offset < end) {
             if (end == start && countCurrent) {
               res = end;
-            }
-            else {
+            } else {
               res = offset - 1;
             }
 
@@ -1216,8 +1214,7 @@ public class SearchHelper {
         if (np < res || res < start) {
           res = np;
         }
-      }
-      else {
+      } else {
         if (np > res || (res >= start && !countCurrent)) {
           res = np;
         }
@@ -1256,12 +1253,10 @@ public class SearchHelper {
       which = 0;
       if (oneway) {
         findend = dir > 0;
-      }
-      else if (dir > 0 && start < max - 1 && !Character.isSpaceChar(chars.charAt(start + 1))) {
+      } else if (dir > 0 && start < max - 1 && !Character.isSpaceChar(chars.charAt(start + 1))) {
         findend = true;
       }
-    }
-    else if (start == snext) // On sentence start
+    } else if (start == snext) // On sentence start
     {
       if (dir < 0 && !oneway) {
         return start;
@@ -1271,8 +1266,7 @@ public class SearchHelper {
       if (dir < 0 && oneway) {
         findend = false;
       }
-    }
-    else if (start == enext) // On sentence end
+    } else if (start == enext) // On sentence end
     {
       if (dir > 0 && !oneway) {
         return start;
@@ -1282,37 +1276,30 @@ public class SearchHelper {
       if (dir > 0 && oneway) {
         findend = true;
       }
-    }
-    else if (start >= sprev && start <= enext && enext < snext) // Middle of sentence
+    } else if (start >= sprev && start <= enext && enext < snext) // Middle of sentence
     {
       which = dir > 0 ? 1 : 0;
-    }
-    else // Between sentences
+    } else // Between sentences
     {
       which = dir > 0 ? 0 : 1;
       if (dir > 0) {
         if (oneway) {
           if (start < snext - 1) {
             findend = true;
-          }
-          else if (start == snext - 1) {
+          } else if (start == snext - 1) {
             count++;
           }
-        }
-        else {
+        } else {
           findend = true;
         }
-      }
-      else {
+      } else {
         if (oneway) {
           if (start > eprev + 1) {
             findend = false;
-          }
-          else if (start == eprev + 1) {
+          } else if (start == eprev + 1) {
             count++;
           }
-        }
-        else {
+        } else {
           findend = true;
         }
       }
@@ -1322,8 +1309,7 @@ public class SearchHelper {
     for (; count > 0 && res >= 0 && res <= max - 1; count--) {
       if ((toggle && which % 2 == 1) || (isOuter && findend)) {
         res = findSentenceEnd(editor, chars, res, max, dir, false, total > 1);
-      }
-      else {
+      } else {
         res = findSentenceStart(editor, chars, res, max, dir, false, total > 1);
       }
       if (res == 0 || res == max - 1) {
@@ -1333,8 +1319,7 @@ public class SearchHelper {
       if (toggle) {
         if (which % 2 == 1 && dir < 0) {
           res++;
-        }
-        else if (which % 2 == 0 && dir > 0) {
+        } else if (which % 2 == 0 && dir > 0) {
           res--;
         }
       }
@@ -1344,8 +1329,7 @@ public class SearchHelper {
 
     if (res < 0 || count > 0) {
       res = dir > 0 ? max - 1 : 0;
-    }
-    else if (isOuter && ((dir < 0 && findend) || (dir > 0 && !findend))) {
+    } else if (isOuter && ((dir < 0 && findend) || (dir > 0 && !findend))) {
       if (res != 0 && res != max - 1) {
         res -= dir;
       }
@@ -1381,8 +1365,7 @@ public class SearchHelper {
 
         return new TextRange(end, start);
       }
-    }
-    else {
+    } else {
       int end = findSentenceRangeEnd(editor, chars, offset, max, count, isOuter, false);
 
       boolean space = isOuter;
@@ -1402,11 +1385,9 @@ public class SearchHelper {
     int maxline = EditorHelper.getLineCount(editor);
     if (line >= 0 && line < maxline) {
       return EditorHelper.getLineStartOffset(editor, line);
-    }
-    else if (line == maxline) {
+    } else if (line == maxline) {
       return count > 0 ? EditorHelper.getFileSize(editor) - 1 : 0;
-    }
-    else {
+    } else {
       return -1;
     }
   }
@@ -1416,8 +1397,7 @@ public class SearchHelper {
 
     if (line >= 0) {
       return EditorHelper.getLineStartOffset(editor, line);
-    }
-    else {
+    } else {
       return dir > 0 ? EditorHelper.getFileSize(editor) - 1 : 0;
     }
   }
@@ -1436,8 +1416,7 @@ public class SearchHelper {
 
     if (total == 1 && line < 0) {
       line = dir > 0 ? maxline - 1 : 0;
-    }
-    else if (total > 1 && count == 0 && line < 0) {
+    } else if (total > 1 && count == 0 && line < 0) {
       line = dir > 0 ? maxline - 1 : 0;
     }
 
@@ -1487,8 +1466,7 @@ public class SearchHelper {
     if (isOuter) {
       if (EditorHelper.isLineEmpty(editor, line, true)) {
         sline = line;
-      }
-      else {
+      } else {
         sline = findNextParagraphLine(editor, -1, true);
       }
 
@@ -1501,25 +1479,20 @@ public class SearchHelper {
         if (sline == line) {
           eline--;
           fixstart = true;
-        }
-        else {
+        } else {
           sline++;
           fixend = true;
         }
-      }
-      else if (!EditorHelper.isLineEmpty(editor, eline, true) && !EditorHelper.isLineEmpty(editor, sline, true) &&
-               sline > 0) {
+      } else if (!EditorHelper.isLineEmpty(editor, eline, true) && !EditorHelper.isLineEmpty(editor, sline, true) &&
+              sline > 0) {
         sline--;
         fixstart = true;
-      }
-      else if (EditorHelper.isLineEmpty(editor, eline, true)) {
+      } else if (EditorHelper.isLineEmpty(editor, eline, true)) {
         fixend = true;
-      }
-      else if (EditorHelper.isLineEmpty(editor, sline, true)) {
+      } else if (EditorHelper.isLineEmpty(editor, sline, true)) {
         fixstart = true;
       }
-    }
-    else {
+    } else {
       sline = line;
       if (!EditorHelper.isLineEmpty(editor, sline, true)) {
         sline = findNextParagraphLine(editor, -1, true);
@@ -1527,8 +1500,7 @@ public class SearchHelper {
           sline++;
         }
         eline = line;
-      }
-      else {
+      } else {
         eline = line - 1;
       }
 
@@ -1539,13 +1511,11 @@ public class SearchHelper {
           if (eline < 0) {
             if (i == count - 1) {
               eline = maxline - 1;
-            }
-            else {
+            } else {
               return null;
             }
           }
-        }
-        else {
+        } else {
           eline++;
         }
         which++;
@@ -1558,8 +1528,7 @@ public class SearchHelper {
       while (sline > 0) {
         if (EditorHelper.isLineEmpty(editor, sline - 1, true)) {
           sline--;
-        }
-        else {
+        } else {
           break;
         }
       }
@@ -1569,8 +1538,7 @@ public class SearchHelper {
       while (eline < maxline - 1) {
         if (EditorHelper.isLineEmpty(editor, eline + 1, true)) {
           eline++;
-        }
-        else {
+        } else {
           break;
         }
       }
@@ -1596,12 +1564,12 @@ public class SearchHelper {
 
   private static String getPairChars() {
     if (pairsChars == null) {
-      ListOption lo = (ListOption)Options.getInstance().getOption("matchpairs");
+      ListOption lo = (ListOption) Options.getInstance().getOption("matchpairs");
       pairsChars = parseOption(lo);
 
       lo.addOptionChangeListener(new OptionChangeListener() {
         public void valueChange(OptionChangeEvent event) {
-          pairsChars = parseOption((ListOption)event.getOption());
+          pairsChars = parseOption((ListOption) event.getOption());
         }
       });
     }

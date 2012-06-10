@@ -21,21 +21,34 @@ package com.maddyhome.idea.vim.action.motion.scroll;
 
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.actionSystem.EditorAction;
+import com.maddyhome.idea.vim.action.motion.MotionEditorAction;
+import com.maddyhome.idea.vim.command.Argument;
 import com.maddyhome.idea.vim.command.Command;
 import com.maddyhome.idea.vim.group.CommandGroups;
-import com.maddyhome.idea.vim.handler.AbstractEditorActionHandler;
+import com.maddyhome.idea.vim.handler.motion.MotionEditorActionHandler;
+import com.maddyhome.idea.vim.helper.EditorData;
 
 /**
  */
-public class MotionScrollHalfPageDownAction extends EditorAction {
-  public MotionScrollHalfPageDownAction() {
-    super(new Handler());
-  }
-
-  private static class Handler extends AbstractEditorActionHandler {
-    protected boolean execute(Editor editor, DataContext context, Command cmd) {
-      return CommandGroups.getInstance().getMotion().scrollHalfPage(editor, context, 1, cmd.getRawCount());
+public class MotionScrollHalfPageDownAction extends MotionEditorAction {
+    public MotionScrollHalfPageDownAction() {
+        super(new Handler());
     }
-  }
+
+    private static class Handler extends MotionEditorActionHandler {
+        public int getOffset(Editor editor, DataContext context, int count, int rawCount, Argument argument) {
+            return CommandGroups.getInstance().getMotion().moveCaretVertical(editor, 20);
+        }
+
+        protected void preMove(Editor editor, DataContext context, Command cmd) {
+            col = EditorData.getLastColumn(editor);
+        }
+
+        protected void postMove(Editor editor, DataContext context, Command cmd) {
+            EditorData.setLastColumn(editor, col);
+        }
+
+        private int col;
+    }
 }
+
