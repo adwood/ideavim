@@ -71,20 +71,22 @@ public class MotionGroup extends AbstractActionGroup {
         // using the gd and gD commands (Goto Declaration). This bug has been around since Idea 6.0.4?
         // Prior to this change the visible area code was moving the cursor around during file load and messing
         // with the cursor position of the Goto Declaration processing.
-        ApplicationManager.getApplication().invokeLater(new Runnable() {
-          public void run() {
+        if(VimPlugin.isEnabled()) {
             ApplicationManager.getApplication().invokeLater(new Runnable() {
               public void run() {
                 ApplicationManager.getApplication().invokeLater(new Runnable() {
                   public void run() {
-                    addEditorListener(editor);
-                    EditorData.setMotionGroup(editor, true);
+                    ApplicationManager.getApplication().invokeLater(new Runnable() {
+                      public void run() {
+                        addEditorListener(editor);
+                        EditorData.setMotionGroup(editor, true);
+                      }
+                    });
                   }
                 });
               }
             });
-          }
-        });
+        }
       }
 
       public void editorReleased(EditorFactoryEvent event) {

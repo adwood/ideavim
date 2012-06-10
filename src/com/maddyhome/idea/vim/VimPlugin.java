@@ -96,7 +96,7 @@ public class VimPlugin implements ApplicationComponent, PersistentStateComponent
   // It is enabled by default to avoid any special configuration after plugin installation
   private boolean enabled = true;
 
-  private static Logger LOG = Logger.getInstance(VimPlugin.class);
+  private static Logger LOG = Logger.getInstance(VimPlugin.class.getName());
 
   private final Application myApp;
 
