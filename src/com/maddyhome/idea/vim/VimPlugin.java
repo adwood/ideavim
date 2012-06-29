@@ -80,6 +80,7 @@ public class VimPlugin implements ApplicationComponent, PersistentStateComponent
   private static final String IDEAVIM_COMPONENT_NAME = "VimPlugin";
   public static final String IDEAVIM_NOTIFICATION_ID = "ideavim";
   public static final String IDEAVIM_NOTIFICATION_TITLE = "IdeaVim";
+  private static final int IDEAVIM_VIMKEYMAP_WARNING_TIMEOUT = 10000;
 
   private static final boolean BLOCK_CURSOR_VIM_VALUE = true;
   private static final boolean ANIMATED_SCROLLING_VIM_VALUE = false;
@@ -182,9 +183,22 @@ public class VimPlugin implements ApplicationComponent, PersistentStateComponent
       // In this case we should warn if user doesn't use vim keymap
       else {
         if (!VimKeyMapUtil.isVimKeymapUsed()) {
-          Notifications.Bus.notify(new Notification(IDEAVIM_NOTIFICATION_ID, IDEAVIM_NOTIFICATION_TITLE,
-                                                    "Vim keymap is not active, IdeaVim plugin may work incorrectly",
-                                                    NotificationType.WARNING));
+          final Notification n =  new Notification(IDEAVIM_NOTIFICATION_ID, IDEAVIM_NOTIFICATION_TITLE,
+                  "Vim keymap is not active, IdeaVim plugin may work incorrectly",
+                  NotificationType.WARNING);
+          Notifications.Bus.notify(n);
+          (new Thread()
+          {
+            @Override
+            public void run() {
+              try {
+                Thread.sleep(IDEAVIM_VIMKEYMAP_WARNING_TIMEOUT);
+                n.expire();
+              } catch (Exception e) {
+                // ignore
+              }
+            }
+          }).start();
         }
       }
     }
