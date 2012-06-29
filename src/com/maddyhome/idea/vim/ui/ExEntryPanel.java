@@ -27,6 +27,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusAdapter;
 import java.awt.event.KeyEvent;
 
 /**
@@ -50,6 +52,15 @@ public class ExEntryPanel extends JPanel {
     entry = new ExTextField();
     entry.setFont(font);
     entry.setBorder(null);
+    // Avoid selecting initial text, which is non vim-ish
+    entry.addFocusListener(new FocusAdapter()
+    {
+      @Override
+      public void focusGained(FocusEvent focusEvent)
+      {
+        entry.setCaretPosition(entry.getDocument().getLength());
+      }
+    });
 
     setForeground(entry.getForeground());
     setBackground(entry.getBackground());
