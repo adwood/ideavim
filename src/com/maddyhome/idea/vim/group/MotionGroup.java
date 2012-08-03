@@ -649,7 +649,7 @@ public class MotionGroup extends AbstractActionGroup {
   public int moveCaretToNextParagraph(Editor editor, int count) {
     int res = SearchHelper.findNextParagraph(editor, count, false);
     if (res >= 0) {
-      res = EditorHelper.normalizeOffset(editor, res, true);
+      res = EditorHelper.normalizeOffset(editor, res, false);
     }
     else {
       res = -1;
@@ -661,7 +661,7 @@ public class MotionGroup extends AbstractActionGroup {
   public int moveCaretToNextSentenceStart(Editor editor, int count) {
     int res = SearchHelper.findNextSentenceStart(editor, count, false, true);
     if (res >= 0) {
-      res = EditorHelper.normalizeOffset(editor, res, true);
+      res = EditorHelper.normalizeOffset(editor, res, false);
     }
     else {
       res = -1;

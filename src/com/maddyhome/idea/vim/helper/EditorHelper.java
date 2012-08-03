@@ -334,17 +334,30 @@ public class EditorHelper {
     return normalizeOffset(editor, offset, true);
   }
 
+  /**
+   * Ensures that the supplied offset is within the range for the file. If allowEnd is true, the range will allow
+   * for the offset to be one past the last character in the file.
+   *
+   * @param editor   The editor
+   * @param offset   The offset to normalize
+   * @param allowEnd true if the offset can be one past the last character in the file, false if not
+   * @return The normalized file offset number
+   */
   public static int normalizeOffset(final Editor editor, int offset, final boolean allowEnd) {
     if (offset <= 0) {
       return 0;
     }
+
     final int textLength = editor.getDocument().getTextLength();
     if (offset > textLength) {
-      offset = textLength;
+        if (allowEnd) {
+            return textLength;
+        }
+        else {
+            return textLength - 1;
+        }
     }
-    if (offset > 0 && !allowEnd && editor.getDocument().getCharsSequence().charAt(textLength - 1) == '\n'){
-      offset --;
-    }
+
     return offset;
   }
 
